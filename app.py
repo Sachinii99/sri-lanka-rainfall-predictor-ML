@@ -181,6 +181,35 @@ input{
     font-weight:700 !important;
 }
 
+/* ---------- Dropdown Popover (The List of Options) ---------- */
+div[data-baseweb="popover"] {
+    background: transparent !important;
+}
+
+div[data-baseweb="popover"] ul {
+    background-color: #f0f9ff !important; /* Light sky blue */
+    border: 1px solid #bae6fd !important;
+    border-radius: 12px !important;
+}
+
+div[data-baseweb="popover"] li {
+    background-color: transparent !important;
+    color: #0369a1 !important; /* Azure blue text */
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+div[data-baseweb="popover"] li:hover {
+    background-color: #e0f2fe !important;
+    color: #02507d !important;
+}
+
+/* Selected item in the list */
+div[data-baseweb="popover"] li[aria-selected="true"] {
+    background-color: #bae6fd !important;
+    color: #0c4a6e !important;
+}
+
 /* Fix visibility of + and - marks in Number Inputs */
 .stNumberInput button {
     background-color: #e0f2fe !important;
@@ -333,8 +362,7 @@ bg, condition, icon, intensity = rain_style(prediction)
 # ----------------------------
 # Header
 # ----------------------------
-st.markdown('<div class="big-title">🌧️ Sri Lanka Weather Intelligence Dashboard</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtle">Rainfall prediction + explainability (SHAP / PDP / LIME) for your selected scenario.</div>', unsafe_allow_html=True)
+st.markdown('<div class="big-title">🌧️ Sri Lanka Rainfall Prediction Dashboard</div>', unsafe_allow_html=True)
 st.markdown("")
 
 # ----------------------------
@@ -347,7 +375,7 @@ with k1:
     <div class="card">
       <div class="card-title">Predicted Rainfall</div>
       <div class="kpi">{prediction:.2f} mm</div>
-      <div class="kpi-sub">Estimated daily volume</div>
+    
     </div>
     """, unsafe_allow_html=True)
 
@@ -356,7 +384,7 @@ with k2:
     <div class="card">
       <div class="card-title">Condition</div>
       <div class="kpi">{icon} {condition}</div>
-      <div class="kpi-sub">Class: {intensity}</div>
+ 
     </div>
     """, unsafe_allow_html=True)
 
@@ -366,7 +394,7 @@ with k3:
     <div class="card">
       <div class="card-title">Location</div>
       <div class="kpi">📍 {loc}</div>
-      <div class="kpi-sub">City context</div>
+
     </div>
     """, unsafe_allow_html=True)
 
@@ -375,7 +403,7 @@ with k4:
     <div class="card">
       <div class="card-title">Time Context</div>
       <div class="kpi">🗓️ {month_name} • {day}</div>
-      <div class="kpi-sub">Calendar features</div>
+    
     </div>
     """, unsafe_allow_html=True)
 
@@ -414,7 +442,7 @@ with tab1:
     # Gauge + quick insights
     with left:
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">📟 Intensity Gauge</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">📟 Intensity</div>', unsafe_allow_html=True)
 
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number",
@@ -437,8 +465,11 @@ with tab1:
             height=250,
             margin=dict(l=20, r=20, t=10, b=10),
             paper_bgcolor="rgba(0,0,0,0)",
-            font={"color": "#0f172a"},
+            plot_bgcolor="rgba(0,0,0,0)",
+            font={"color": "#0f172a", "family": "Inter, sans-serif"},
+            template="plotly_white"
         )
+        fig_gauge.update_traces(gauge_axis_tickfont={"color": "#0f172a", "size": 12})
         st.plotly_chart(fig_gauge, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -546,8 +577,25 @@ with tab2:
             numeric_cols = [c for c in feature_columns if c in X_sample.columns][:20]
             chosen = st.selectbox("Select feature to view distribution", numeric_cols)
 
-            fig_hist = px.histogram(X_sample, x=chosen, nbins=30, title=f"Distribution: {chosen}")
-            fig_hist.update_layout(height=350, margin=dict(l=10, r=10, t=40, b=10))
+            fig_hist = px.histogram(X_sample, x=chosen, nbins=30, title=f"Distribution: {chosen}", template="plotly_white")
+            fig_hist.update_layout(
+                height=350, 
+                margin=dict(l=40, r=20, t=50, b=40),
+                paper_bgcolor="white",
+                plot_bgcolor="white",
+                font={"color": "#0f172a", "family": "Inter, sans-serif"},
+                title_font={"size": 16, "color": "#0f172a"}
+            )
+            fig_hist.update_xaxes(
+                showline=True, linewidth=1, linecolor='#cbd5e1', 
+                gridcolor='#f1f5f9', title_font={"color": "#0f172a"},
+                tickfont={"color": "#0f172a"}
+            )
+            fig_hist.update_yaxes(
+                showline=True, linewidth=1, linecolor='#cbd5e1', 
+                gridcolor='#f1f5f9', title_font={"color": "#0f172a"},
+                tickfont={"color": "#0f172a"}
+            )
             st.plotly_chart(fig_hist, use_container_width=True)
 
         except Exception as e:
@@ -635,4 +683,3 @@ with tab2:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-st.caption("Sri Lanka Rainfall Prediction • Modern Analytics UI • SHAP / PDP / LIME")
