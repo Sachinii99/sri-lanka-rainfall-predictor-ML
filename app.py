@@ -22,9 +22,6 @@ matplotlib.rcParams.update({
     "ytick.color": "#64748b"
 })
 
-# ----------------------------
-# Page Config
-# ----------------------------
 st.set_page_config(
     page_title="Sri Lanka Rainfall Predictor",
     page_icon="🌧️",
@@ -32,9 +29,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ----------------------------
-# Modern CSS UI
-# ----------------------------
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -56,7 +50,7 @@ section[data-testid="stSidebar"]{
     border-right:1px solid #e2e8f0 !important;
 }
 
-/* Force readable text */
+
 [data-testid="stAppViewContainer"] *{
     color:#0f172a !important;
     opacity:1 !important;
@@ -99,7 +93,6 @@ section[data-testid="stSidebar"]{
     font-size:0.9rem !important;
 }
 
-/* ---------- Hero ---------- */
 .hero{
     border-radius:28px !important;
     padding:45px 50px !important; /* Significantly increased padding */
@@ -181,7 +174,6 @@ input{
     font-weight:700 !important;
 }
 
-/* ---------- Dropdown Popover (The List of Options) ---------- */
 div[data-baseweb="popover"] {
     background: transparent !important;
 }
@@ -204,7 +196,6 @@ div[data-baseweb="popover"] li:hover {
     color: #02507d !important;
 }
 
-/* Selected item in the list */
 div[data-baseweb="popover"] li[aria-selected="true"] {
     background-color: #bae6fd !important;
     color: #0c4a6e !important;
@@ -241,9 +232,6 @@ button[data-baseweb="tab"][aria-selected="true"]{
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------
-# Load Assets
-# ----------------------------
 @st.cache_resource
 def load_assets():
     model = joblib.load("xgb_rain_model.pkl")
@@ -303,9 +291,8 @@ def get_sample_for_global(feature_cols, nrows=10000, sample_n=1200):
     X = X.fillna(0).astype(float)
     return X
 
-# ----------------------------
+
 # Sidebar Controls
-# ----------------------------
 st.sidebar.markdown("## 🎛️ Dashboard Controls")
 
 with st.sidebar:
@@ -331,9 +318,8 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Tip: Change inputs and observe SHAP + PDP/LIME for explainability.")
 
-# ----------------------------
 # Build Input Vector
-# ----------------------------
+
 input_df = build_input_df(feature_columns)
 set_val(input_df, "temperature_2m_mean", temp_mean)
 set_val(input_df, "temperature_2m_max", temp_max)
@@ -347,9 +333,7 @@ set_val(input_df, "dayofweek", DAY_MAP[day])
 if city != "Other":
     set_val(input_df, f"city_{city}", 1.0)
 
-# ----------------------------
 # Predict
-# ----------------------------
 try:
     prediction = float(model.predict(input_df)[0])
 except Exception as e:
@@ -359,15 +343,11 @@ except Exception as e:
 prediction = max(0.0, prediction)
 bg, condition, icon, intensity = rain_style(prediction)
 
-# ----------------------------
 # Header
-# ----------------------------
 st.markdown('<div class="big-title">🌧️ Sri Lanka Rainfall Prediction Dashboard</div>', unsafe_allow_html=True)
 st.markdown("")
 
-# ----------------------------
 # KPI Row
-# ----------------------------
 k1, k2, k3, k4 = st.columns([1.1, 1.1, 1.1, 1.2])
 
 with k1:
@@ -409,14 +389,8 @@ with k4:
 
 st.markdown("")
 
-# ----------------------------
-# Tabs
-# ----------------------------
 tab1, tab2 = st.tabs(["🎯 Prediction", "🔬 Model Intelligence"])
 
-# ----------------------------
-# Tab 1: Prediction UI
-# ----------------------------
 with tab1:
     st.markdown(f"""
     <div class="hero" style="background: {bg};">
@@ -494,7 +468,6 @@ with tab1:
 
         shap_vals = explainer.shap_values(input_df)
 
-        # Top positive and negative
         top_pos = feature_columns[int(np.argmax(shap_vals[0]))]
         top_neg = feature_columns[int(np.argmin(shap_vals[0]))]
 
@@ -530,9 +503,6 @@ with tab1:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ----------------------------
-# Session state toggles
-# ----------------------------
 if "show_pdp" not in st.session_state:
     st.session_state.show_pdp = False
 if "show_lime" not in st.session_state:
@@ -540,9 +510,7 @@ if "show_lime" not in st.session_state:
 if "last_pdp_feature" not in st.session_state:
     st.session_state.last_pdp_feature = feature_columns[0] if len(feature_columns) else ""
 
-# ----------------------------
-# Tab 2: Model Intelligence
-# ----------------------------
+# moedel inteligence
 with tab2:
     topA, topB = st.columns([1.0, 1.0], gap="large")
 
@@ -567,7 +535,7 @@ with tab2:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Feature explorer (simple distribution view)
+    # Feature explorer 
     with topB:
         st.markdown('<div class="card">', unsafe_allow_html=True)
         st.markdown('<div class="card-title">📈 Feature Explorer (Dataset Sample)</div>', unsafe_allow_html=True)

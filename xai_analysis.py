@@ -18,15 +18,12 @@ import xgboost as xgb
 import shap
 from lime.lime_tabular import LimeTabularExplainer
 
-# --------------------------
+
 # 1) Load Dataset
-# --------------------------
 df = pd.read_csv("SriLanka_Weather_Dataset.csv")
 print("Original shape:", df.shape)
 
-# --------------------------
 # 2) Preprocessing
-# --------------------------
 # Drop leakage-prone precipitation aggregates (keep ONLY rain_sum as target)
 df = df.drop(columns=["precipitation_sum", "precipitation_hours"], errors="ignore")
 
@@ -44,9 +41,7 @@ df = pd.get_dummies(df, columns=["city"], drop_first=True)
 
 print("After preprocessing:", df.shape)
 
-# --------------------------
 # 3) Features & Target
-# --------------------------
 TARGET = "rain_sum"
 X = df.drop(columns=[TARGET])
 y = df[TARGET]
@@ -57,9 +52,7 @@ if non_numeric:
     print("Dropping non-numeric columns:", non_numeric)
     X = X.drop(columns=non_numeric)
 
-# --------------------------
 # 4) Split (Train/Val/Test)
-# --------------------------
 X_train, X_temp, y_train, y_temp = train_test_split(
     X, y, test_size=0.30, random_state=42
 )
@@ -69,9 +62,7 @@ X_val, X_test, y_val, y_test = train_test_split(
 
 print("Train:", X_train.shape, "Validation:", X_val.shape, "Test:", X_test.shape)
 
-# --------------------------
 # 5) Train XGBoost Model
-# --------------------------
 model = XGBRegressor(
     n_estimators=300,
     learning_rate=0.05,
@@ -85,18 +76,14 @@ model.fit(X_train, y_train)
 
 print("\nModel trained. Generating XAI outputs...")
 
-# =========================================================
 # A) Feature Importance (XGBoost built-in)
-# =========================================================
 plt.figure(figsize=(10, 6))
 xgb.plot_importance(model, max_num_features=10)
 plt.title("XGBoost Feature Importance (Top 10)")
 plt.tight_layout()
 plt.show()
 
-# =========================================================
 # B) SHAP (Global + Local)
-# =========================================================
 print("\n[SHAP] Computing SHAP values...")
 
 # TreeExplainer is more stable for XGBoost
@@ -134,9 +121,7 @@ exp = shap.Explanation(
 
 shap.plots.waterfall(exp, show=True)
 
-# =========================================================
 # C) LIME (Local explanation)
-# =========================================================
 print("\n[LIME] Generating local explanation...")
 
 feature_names = X_train.columns.tolist()
@@ -164,9 +149,7 @@ plt.title("LIME Local Explanation (Top 10)")
 plt.tight_layout()
 plt.show()
 
-# =========================================================
 # D) PDP (Partial Dependence Plots)
-# =========================================================
 print("\n[PDP] Generating PDP plots...")
 
 # Choose top 3 SHAP features for PDP

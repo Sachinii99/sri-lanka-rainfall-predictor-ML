@@ -14,7 +14,7 @@ df["time"] = pd.to_datetime(df["time"])
 df["month"] = df["time"].dt.month
 df["dayofweek"] = df["time"].dt.dayofweek
 
-# 4) Leakage removal (very important)
+# 4) Leakage removal 
 df = df.drop(columns=["precipitation_sum"], errors="ignore")
 
 # 5) One-hot encoding (city)

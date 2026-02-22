@@ -5,14 +5,10 @@ import joblib
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 
-# --------------------------
 # Load
-# --------------------------
 df = pd.read_csv("SriLanka_Weather_Dataset.csv")
 
-# --------------------------
-# Preprocessing (same as training)
-# --------------------------
+# Preprocessing 
 df = df.drop(columns=["precipitation_sum", "precipitation_hours"], errors="ignore")
 
 df["time"] = pd.to_datetime(df["time"], errors="coerce")

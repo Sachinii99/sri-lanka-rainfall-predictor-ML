@@ -1,6 +1,5 @@
-# ==========================================
+
 # Rainfall Prediction using XGBoost
-# ==========================================
 
 import pandas as pd
 import numpy as np
@@ -13,15 +12,11 @@ from xgboost import XGBRegressor
 import xgboost as xgb
 import shap
 
-# --------------------------
+
 # 1. Load Dataset
-# --------------------------
-df = pd.read_csv("SriLanka_Weather_Dataset.csv")
 print("Original shape:", df.shape)
 
-# --------------------------
 # 2. Preprocessing
-# --------------------------
 
 # Remove leakage columns
 df = df.drop(columns=["precipitation_sum", "precipitation_hours"], errors="ignore")
@@ -61,16 +56,12 @@ df = df.dropna()
 
 print("After preprocessing:", df.shape)
 
-# --------------------------
 # 3. Define Features & Target
-# --------------------------
 
 X = df.drop(columns=["rain_sum"]).astype(float)
 y = df["rain_sum"]
 
-# --------------------------
 # 4. Train / Validation / Test Split
-# --------------------------
 
 X_train, X_temp, y_train, y_temp = train_test_split(
     X, y, test_size=0.30, random_state=42
@@ -84,9 +75,7 @@ print("Train:", X_train.shape)
 print("Validation:", X_val.shape)
 print("Test:", X_test.shape)
 
-# --------------------------
 # 5. XGBoost Model
-# --------------------------
 
 model = XGBRegressor(
     n_estimators=300,
@@ -100,9 +89,7 @@ model = XGBRegressor(
 
 model.fit(X_train, y_train)
 
-# --------------------------
 # 6. Evaluation
-# --------------------------
 
 y_test_pred = model.predict(X_test)
 
@@ -113,9 +100,7 @@ print("\n===== MODEL PERFORMANCE =====")
 print("Test RMSE:", rmse)
 print("Test R2:", r2)
 
-# --------------------------
 # 7. Actual vs Predicted Plot
-# --------------------------
 
 plt.figure(figsize=(6,6))
 plt.scatter(y_test, y_test_pred, alpha=0.3)
@@ -124,18 +109,14 @@ plt.ylabel("Predicted Rainfall")
 plt.title("Actual vs Predicted Rainfall")
 plt.show()
 
-# --------------------------
 # 8. Feature Importance
-# --------------------------
 
 plt.figure(figsize=(10,6))
 xgb.plot_importance(model, max_num_features=10)
 plt.title("Top 10 Important Features")
 plt.show()
 
-# --------------------------
 # 9. SHAP Explainability
-# --------------------------
 
 print("\nGenerating SHAP plots...")
 
